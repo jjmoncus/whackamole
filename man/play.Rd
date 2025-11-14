@@ -4,7 +4,14 @@
 \alias{play}
 \title{Play a game of Whack-A-Mole}
 \usage{
-play(n = 3, theta = 0.8, turn_time = 1)
+play(
+  n = 3,
+  theta = 0.8,
+  turn_time = 1,
+  pref_radial = 0.05,
+  pref_local = (1 - pref_radial/2),
+  pref_global = (1 - pref_radial/2)
+)
 }
 \arguments{
 \item{n}{The dimension of the grid of moles (n x n)}

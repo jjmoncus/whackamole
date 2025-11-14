@@ -9,7 +9,11 @@ constructor_board <- function(x) {
 
   class(x) <- c("board", class(x))
 
-  return( x )
+  num_moles <- sum(x)
+  return(
+    structure(x,
+              num_moles = num_moles)
+    )
 }
 
 
@@ -28,14 +32,34 @@ constructor_board <- function(x) {
 #' @method print board
 #'
 #' @importFrom purrr keep map reduce
-#' @importFrom gt tab_header tab_options cols_align pct tab_style cell_fill cell_text cells_body
+#' @importFrom gt tab_header tab_options cols_align pct tab_style cell_fill cell_text cells_body tab_source_note
 #'
 #'
 print.board <- function(board, ...) {
 
   n <- dim(board)[1]
   last_whack <- attr(board, "last_whack")
+  num_moles <- attr(board, "num_moles")
 
+  mole_locs <- mole_locations(board)
+  # mole_loc_params <- map(
+  #   mole_locs,
+  #   function(z) {
+  #
+  #     list(z)
+  #     })
+  apply_mole_loc_borders <- function(g, args) {
+    g %>%
+      tab_style(
+        style = cell_borders(sides = "all",
+                             color = "grey",
+                             weight = px(1)),
+        locations = cells_body(rows = args[["row"]],
+                               columns = args[["col"]]))
+  }
+
+
+  # generic output
   out <- board %>%
     # noquote() %>% # at this point, it's a matrix
     as.data.frame() %>%
@@ -43,7 +67,8 @@ print.board <- function(board, ...) {
     tab_header(title = "Whack-A-Mole") %>%
     tab_options(column_labels.hidden = TRUE,
                 table.width = pct(60)) %>%
-    cols_align(align = "center")
+    cols_align(align = "center") %>%
+    tab_source_note(glue("Number of moles left: {num_moles}"))
 
   if (is.null(last_whack)) {
 
@@ -70,7 +95,6 @@ print.board <- function(board, ...) {
       })
 
     apply_adj_style <- function(g, args) {
-
       g %>%
         tab_style(
           style = list(
@@ -95,7 +119,10 @@ print.board <- function(board, ...) {
 
   }
 
+
+  # finally, add boarders around mole locations
   out %>%
+    {reduce(mole_locs, apply_mole_loc_borders, .init = .)} %>%
     print()
 
   # Return the input object invisibly (standard R convention)

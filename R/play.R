@@ -14,7 +14,10 @@
 #'
 #' @export
 
-play <- function(n = 3, theta = .8, turn_time = 1) {
+play <- function(n = 3, theta = .8, turn_time = 1,
+                 pref_radial = .05,
+                 pref_local = (1 - pref_radial/2),
+                 pref_global = (1 - pref_radial/2)) {
 
   cat("#########################################", "\n")
   cat("# ------ Let's play Whack-A-Mole! ----- #", "\n")
@@ -62,7 +65,7 @@ play <- function(n = 3, theta = .8, turn_time = 1) {
     radial <- radial_top_left(board)
     local_2 <- density_local(board, i = hit[1], j = hit[2], degree = 2)
     global <- density_global(board)
-    weight <- .3 * radial + .5 * local_2 + .2 * global
+    weight <- pref_radial * radial + pref_local * local_2 + pref_global * global
     hit <- weight %>% which.max() %>% arrayInd(c(n, n)) # get location of first, largest subspace
     board <- whack(board, hit[1], hit[2])
     Sys.sleep(turn_time)

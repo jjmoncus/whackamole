@@ -59,7 +59,9 @@ density_global <- function(board) {
     }
   }
 
-  return( strip_edges(out) )
+  out <-  strip_edges(out) %>%
+    {. / sum(.)}
+  return( out )
 }
 
 #' The density of moles across a matrix, with strong local preference
@@ -87,7 +89,14 @@ density_local <- function(board, i, j, degree = 1) {
 
   }
 
-  return( strip_edges(out) )
+  # turn back to original dimensions and normalize
+  # if sum is zero, need to divide by 1 instead
+
+  out <- strip_edges(out)
+  denom <- sum(out)
+  out <- ifelse(denom == 0, out, out / denom)
+
+  return( out )
 }
 
 #' Weights relative to the position of a cell in a board
@@ -102,6 +111,9 @@ radial_top_left <- function(board, n = dim(board)[1]) {
       out[i,j] <- ifelse(board[i,j] == 0, 0, 1/(i*j))
     }
   }
+
+  # normalize
+  out <- out / sum(out)
   return( out )
 }
 
@@ -146,4 +158,14 @@ whack <- function(board, i, j) {
   print(board)
   cat(glue("# ------ # moles left: {size} ------ #"), "\n")
   return( board )
+}
+
+
+#' Get the locations of all moles
+mole_locations <- function(board) {
+
+  mole_locs <- which(board == 1, arr.ind = TRUE)
+  out <- apply(mole_locs, 1, list)
+
+  return( unlist(out, recursive = FALSE) )
 }
