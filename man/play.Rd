@@ -4,7 +4,14 @@
 \alias{play}
 \title{Play a game of Whack-A-Mole}
 \usage{
-play(n = 3, theta = 0.8)
+play(n = 3, theta = 0.8, turn_time = 1)
+}
+\arguments{
+\item{n}{The dimension of the grid of moles (n x n)}
+
+\item{theta}{Number from 0 to 1, determining how densely the initial grid is packed with moles}
+
+\item{turn_time}{How long you'd like to wait in between turns (in seconds)}
 }
 \description{
 Initiates a random board of moles, then iterates over an algorithm to whack moles,
