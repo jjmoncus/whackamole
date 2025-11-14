@@ -32,7 +32,7 @@ constructor_board <- function(x) {
 #' @method print board
 #'
 #' @importFrom purrr keep map reduce
-#' @importFrom gt tab_header tab_options cols_align pct tab_style cell_fill cell_text cells_body tab_source_note
+#' @importFrom gt tab_header tab_options cols_align pct tab_style cell_fill cell_text cells_body tab_source_note cell_borders px
 #'
 #'
 print.board <- function(board, ...) {
