@@ -16,6 +16,14 @@ constructor_board <- function(x) {
     )
 }
 
+#' Create a new board
+#'
+new_board <- function(n, theta = .8) {
+
+  sample(c(0, 1), n*n, replace = TRUE, prob = c(1 - theta, theta)) %>%
+    matrix(nrow = n, ncol = n) %>%
+    constructor_board()
+}
 
 
 #' Print method for 'board' class
@@ -42,18 +50,32 @@ print.board <- function(board, ...) {
   num_moles <- attr(board, "num_moles")
 
   mole_locs <- mole_locations(board)
-  # mole_loc_params <- map(
-  #   mole_locs,
-  #   function(z) {
-  #
-  #     list(z)
-  #     })
+  moles_below <- fellow_mole_below(board)
+  moles_right <- fellow_mole_right(board)
+
   apply_mole_loc_borders <- function(g, args) {
     g %>%
       tab_style(
         style = cell_borders(sides = "all",
                              color = "grey",
                              weight = px(1)),
+        locations = cells_body(rows = args[["row"]],
+                               columns = args[["col"]]))
+  }
+
+  remove_mole_below_borders <- function(g, args) {
+    g %>%
+      tab_style(
+        style = cell_borders(sides = "bottom",
+                             color = "transparent"),
+        locations = cells_body(rows = args[["row"]],
+                               columns = args[["col"]]))
+  }
+  remove_mole_right_borders <- function(g, args) {
+    g %>%
+      tab_style(
+        style = cell_borders(sides = "right",
+                             color = "transparent"),
         locations = cells_body(rows = args[["row"]],
                                columns = args[["col"]]))
   }
@@ -69,6 +91,10 @@ print.board <- function(board, ...) {
                 table.width = pct(60)) %>%
     cols_align(align = "center") %>%
     tab_source_note(glue("Number of moles left: {num_moles}"))
+  # %>%
+  #   # removing generic borders
+  #   tab_style(style = cell_borders(sides = "all", color = "transparent"),
+  #             locations = cells_body())
 
   if (is.null(last_whack)) {
 
@@ -120,9 +146,13 @@ print.board <- function(board, ...) {
   }
 
 
-  # finally, add boarders around mole locations
+
   out %>%
+    # finally, add boarders around mole locations
     {reduce(mole_locs, apply_mole_loc_borders, .init = .)} %>%
+    # then remove borders between connecting moles
+    {reduce(moles_below, remove_mole_below_borders, .init = .)} %>%
+    {reduce(moles_right, remove_mole_right_borders, .init = .)} %>%
     print()
 
   # Return the input object invisibly (standard R convention)

@@ -16,8 +16,10 @@
 
 play <- function(n = 3, theta = .8, turn_time = 1,
                  pref_radial = .05,
-                 pref_local = (1 - pref_radial/2),
-                 pref_global = (1 - pref_radial/2)) {
+                 pref_left = .05,
+                 pref_local = (1 - (pref_radial + pref_left)/2),
+                 pref_global = (1 - (pref_radial + pref_left)/2),
+                 lambda = .1) {
 
   cat("#########################################", "\n")
   cat("# ------ Let's play Whack-A-Mole! ----- #", "\n")
@@ -33,9 +35,7 @@ play <- function(n = 3, theta = .8, turn_time = 1,
   }
 
   # initialize a random matrix 4x4 matrix of zeros and 1s
-  board <- sample(c(0, 1), n*n, replace = TRUE, prob = c(1 - theta, theta)) %>%
-    matrix(nrow = n, ncol = n) %>%
-    constructor_board()
+  board <- new_board(n = n, theta = theta)
   moves <- 0
 
   cat("# ------ Initial board ----- #", "\n")
@@ -48,29 +48,50 @@ play <- function(n = 3, theta = .8, turn_time = 1,
   board_is_solved <- is_solved(board)
   Sys.sleep(turn_time)
 
-  # Initially, whack with strong preference for radial top left
-  radial <- radial_top_left(board)
+  # Initially, whack with strong preference for:
+  # ---- 1) centrality
+  # ---- 2) mole density
+  central <- close_to(board, i_star = ceiling(n/2), j_star = ceiling(n/2))
   global <- density_global(board)
-  weight <- .9 * radial + .1 * global
+  # leftward <- linear_left(board)
+  # weight <- .8 * global
+  weight <- greedy(board) * central
+  # .2 * central +
   hit <- weight %>% which.max() %>% arrayInd(c(n, n)) # get location of highest weighted mole
   board <- whack(board, hit[1], hit[2]) # whack the mole
   Sys.sleep(turn_time)
   board_is_solved <- is_solved(board) # check if we've solved
   moves <- moves + 1 # add a move
+  sparsity <- attr(board, "num_moles") / (n*n)
 
   while(!board_is_solved) {
 
-    # after t = 1, radial.+ global + local preference
+    # after t = 1, whack with preference for:
+    # ---- 1) where you last hit
 
-    radial <- radial_top_left(board)
-    local_2 <- density_local(board, i = hit[1], j = hit[2], degree = 2)
+    # radial <- radial_top_left(board)
+    # local_2 <- density_local(board, i = hit[1], j = hit[2], degree = 2)
+
+    central <- close_to(board, i_star <- ceiling(n/2), j_star = ceiling(n/2))
+    near_last_hit <- close_to(board, i_star <- hit[1], j_star = hit[2])
     global <- density_global(board)
-    weight <- pref_radial * radial + pref_local * local_2 + pref_global * global
+    # weight <-
+    #   pref_radial * radial +
+    #   pref_local * local_2 +
+    #   pref_global * global +
+    #   pref_left * leftward
+
+    # as the matrix gets sparser, have more of a preference to jump away from the last hit
+    lambda <- 1 - sparsity
+
+    weight <- greedy(board) * central + lambda * far_from(board, hit[1], hit[2])
+    # + .05 * central + .05 * near_last_hit
     hit <- weight %>% which.max() %>% arrayInd(c(n, n)) # get location of first, largest subspace
     board <- whack(board, hit[1], hit[2])
     Sys.sleep(turn_time)
     board_is_solved <- is_solved(board)
     moves <- moves + 1
+    sparsity <- attr(board, "num_moles") / (n*n)
   }
 
   return(
