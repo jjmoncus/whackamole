@@ -1,0 +1,49 @@
+Play a game of whack-a-mole inside your IDE, implemented in R.
+
+# Package index
+
+## All functions
+
+- [`close_to()`](https://jjmoncus.github.io/whackamole/reference/close_to.md)
+  : Weight: how close to you to a certain point
+- [`constructor_board()`](https://jjmoncus.github.io/whackamole/reference/constructor_board.md)
+  : Constructor for our board class
+- [`density_global()`](https://jjmoncus.github.io/whackamole/reference/density_global.md)
+  : Weight: how many moles are near you
+- [`density_local()`](https://jjmoncus.github.io/whackamole/reference/density_local.md)
+  : Weight: are there moles in a star-pattern around you?
+- [`far_from()`](https://jjmoncus.github.io/whackamole/reference/far_from.md)
+  : Weight: are you farther away from somewhere?
+- [`fellow_mole_below()`](https://jjmoncus.github.io/whackamole/reference/fellow_mole_below.md)
+  : For each cell, is there a mole below?
+- [`fellow_mole_right()`](https://jjmoncus.github.io/whackamole/reference/fellow_mole_right.md)
+  : For each mole, is there a mole to the right?
+- [`find_in_grid()`](https://jjmoncus.github.io/whackamole/reference/find_in_grid.md)
+  : Find the locations of elements in a grid
+- [`flip()`](https://jjmoncus.github.io/whackamole/reference/flip.md) :
+  Flip something from 0 to 1, and vice versa
+- [`greedy()`](https://jjmoncus.github.io/whackamole/reference/greedy.md)
+  : Weight: what's the net mole consequence of whacking you?
+- [`is_solved()`](https://jjmoncus.github.io/whackamole/reference/is_solved.md)
+  : Is a board solved?
+- [`linear_left()`](https://jjmoncus.github.io/whackamole/reference/linear_left.md)
+  : Weight: how far are you from the left-most column?
+- [`local_sum()`](https://jjmoncus.github.io/whackamole/reference/local_sum.md)
+  : The number of moles on and around (i, j)
+- [`make_big()`](https://jjmoncus.github.io/whackamole/reference/make_big.md)
+  : Add padding around a board
+- [`mole_locations()`](https://jjmoncus.github.io/whackamole/reference/mole_locations.md)
+  : Get the locations of all moles
+- [`new_board()`](https://jjmoncus.github.io/whackamole/reference/new_board.md)
+  : Create a new board
+- [`play()`](https://jjmoncus.github.io/whackamole/reference/play.md) :
+  Play a game of Whack-A-Mole
+- [`print(`*`<board>`*`)`](https://jjmoncus.github.io/whackamole/reference/print.board.md)
+  : Print method for 'board' class
+- [`radial_top_left()`](https://jjmoncus.github.io/whackamole/reference/radial_top_left.md)
+  : Weight: how far you are from the top-left corner?
+- [`strip_edges()`](https://jjmoncus.github.io/whackamole/reference/strip_edges.md)
+  : Remove edges around a board
+- [`whack()`](https://jjmoncus.github.io/whackamole/reference/whack.md)
+  : Whack a mole at a particular location
+
