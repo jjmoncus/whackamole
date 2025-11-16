@@ -2,6 +2,8 @@
 
 ## All functions
 
+- [`action()`](https://jjmoncus.github.io/whackamole/reference/action.md)
+  : Build an action matrix
 - [`close_to()`](https://jjmoncus.github.io/whackamole/reference/close_to.md)
   : Weight: how close to you to a certain point
 - [`constructor_board()`](https://jjmoncus.github.io/whackamole/reference/constructor_board.md)
