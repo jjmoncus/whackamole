@@ -14,12 +14,7 @@
 #'
 #' @export
 
-play <- function(n = 3, theta = .8, turn_time = 1,
-                 pref_radial = .05,
-                 pref_left = .05,
-                 pref_local = (1 - (pref_radial + pref_left)/2),
-                 pref_global = (1 - (pref_radial + pref_left)/2),
-                 lambda = .1) {
+play <- function(n = 3, theta = .8, turn_time = 1) {
 
   cat("#########################################", "\n")
   cat("# ------ Let's play Whack-A-Mole! ----- #", "\n")
@@ -46,6 +41,11 @@ play <- function(n = 3, theta = .8, turn_time = 1,
 
   # trivially see if it's solved, if not continue
   board_is_solved <- is_solved(board)
+  if (board_is_solved) {
+    return(
+      cat("The board is trivially solved! Great game!", "\n")
+    )
+  }
   Sys.sleep(turn_time)
 
   # Initially, whack with strong preference for:
@@ -66,25 +66,14 @@ play <- function(n = 3, theta = .8, turn_time = 1,
 
   while(!board_is_solved) {
 
-    # after t = 1, whack with preference for:
-    # ---- 1) where you last hit
-
-    # radial <- radial_top_left(board)
-    # local_2 <- density_local(board, i = hit[1], j = hit[2], degree = 2)
-
     central <- close_to(board, i_star <- ceiling(n/2), j_star = ceiling(n/2))
     near_last_hit <- close_to(board, i_star <- hit[1], j_star = hit[2])
     global <- density_global(board)
-    # weight <-
-    #   pref_radial * radial +
-    #   pref_local * local_2 +
-    #   pref_global * global +
-    #   pref_left * leftward
 
     # as the matrix gets sparser, have more of a preference to jump away from the last hit
     lambda <- 1 - sparsity
 
-    weight <- greedy(board) * central + lambda * far_from(board, hit[1], hit[2])
+    weight <- .5*greedy(board) * central + lambda * far_from(board, hit[1], hit[2])
     # + .05 * central + .05 * near_last_hit
     hit <- weight %>% which.max() %>% arrayInd(c(n, n)) # get location of first, largest subspace
     board <- whack(board, hit[1], hit[2])
@@ -98,4 +87,3 @@ play <- function(n = 3, theta = .8, turn_time = 1,
     cat("The board is solved! Great game!", "\n", glue("Game was won in {moves} whacks"), "\n")
   )
 }
-

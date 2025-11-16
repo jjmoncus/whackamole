@@ -113,3 +113,24 @@ fellow_mole_right <- function(board) {
 
   find_in_grid(out, look_for = 2)
 }
+
+
+
+
+#' Build an action matrix
+#'
+action <- function(n) {
+
+  I <- diag(n)
+  T_matrix <- diag(n) # The main diagonal (self-flip)
+  T_matrix[row(T_matrix) == col(T_matrix) - 1] <- 1 # Upper diagonal (neighbor)
+  T_matrix[row(T_matrix) == col(T_matrix) + 1] <- 1 # Lower diagonal (neighbor)
+
+  A_kronecker <- kronecker(T_matrix, I) + kronecker(I, T_matrix) - kronecker(I, I)
+
+  # Note: All operations are effectively modulo 2, but in R, we rely on the
+  # final check to ensure all entries are either 0 or 1.
+  A_kronecker %% 2 # Perform modulo 2 to ensure all entries are 0 or 1
+}
+
+
